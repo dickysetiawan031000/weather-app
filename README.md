@@ -2,7 +2,7 @@
 
 This is a simple project built using **Next.js App Router** featuring:
 
-- 🌦️ A weather app using Open-Meteo API
+- 🌦️ A weather app using Open-Weather API
 - 🔢 FooBar challenge with prime number filtering
 - ✅ Clean and responsive UI with Tailwind CSS
 
