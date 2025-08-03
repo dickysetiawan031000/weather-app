@@ -9,6 +9,18 @@ type Forecast = {
     description: string
 }
 
+type WeatherAPIResponse = {
+    list: {
+        dt_txt: string
+        main: {
+            temp: number
+        }
+        weather: {
+            description: string
+        }[]
+    }[]
+}
+
 export default function WeatherPage() {
     const [forecast, setForecast] = useState<Forecast[]>([])
     const [loading, setLoading] = useState(true)
@@ -20,25 +32,29 @@ export default function WeatherPage() {
                 const response = await fetch(
                     `https://api.openweathermap.org/data/2.5/forecast?q=Jakarta&units=metric&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}`
                 )
-                const data = await response.json()
+                const data: WeatherAPIResponse = await response.json()
 
                 if (!data.list) {
                     throw new Error('Data tidak tersedia')
                 }
 
-                const filtered = data.list.filter((item: any) =>
+                const filtered = data.list.filter((item) =>
                     item.dt_txt.includes('12:00:00')
                 )
 
-                const dailyForecast: Forecast[] = filtered.slice(0, 5).map((item: any) => ({
+                const dailyForecast: Forecast[] = filtered.slice(0, 5).map((item) => ({
                     date: item.dt_txt.split(' ')[0],
                     temp: item.main.temp,
                     description: item.weather[0].description,
                 }))
 
                 setForecast(dailyForecast)
-            } catch (err: any) {
-                setError(err.message || 'Terjadi kesalahan')
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message)
+                } else {
+                    setError('Terjadi kesalahan')
+                }
             } finally {
                 setLoading(false)
             }
